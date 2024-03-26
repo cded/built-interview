@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vaco.built.interview.model.BlogPost;
 import vaco.built.interview.model.request.BlogPostRequest;
+import vaco.built.interview.model.request.BlogPostUpdate;
 import vaco.built.interview.service.BlogPostService;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class BlogPostController {
     }
 
     @PutMapping("")
-    public ResponseEntity<BlogPost> updatePost(@RequestBody BlogPost blogPostDetails) {
+    public ResponseEntity<BlogPost> updatePost(@RequestBody BlogPostUpdate blogPostDetails) {
         return blogPostService.updatePost(blogPostDetails)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

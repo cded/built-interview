@@ -3,10 +3,12 @@ package vaco.built.interview.service;
 import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vaco.built.interview.model.BlogPost;
 import vaco.built.interview.model.Category;
 import vaco.built.interview.model.request.BlogPostRequest;
+import vaco.built.interview.model.request.BlogPostUpdate;
 import vaco.built.interview.repository.BlogPostRepository;
 import vaco.built.interview.repository.CategoryRepository;
 
@@ -45,7 +47,7 @@ public class BlogPostService {
     }
 
     public List<BlogPost> getAllPosts() {
-        return blogPostRepository.findAll();
+        return blogPostRepository.findAll(Sort.by(Sort.Direction.ASC, "timestamp"));
     }
 
     public Optional<BlogPost> getPostById(Long postId) {
@@ -56,14 +58,15 @@ public class BlogPostService {
         return blogPostRepository.findAllByCategoryId(categoryId);
     }
 
-    public Optional<BlogPost> updatePost(BlogPost blogPostDetails) {
+    public Optional<BlogPost> updatePost(BlogPostUpdate blogPostDetails) {
         Long postId = blogPostDetails.getId();
         return blogPostRepository.findById(postId)
                 .map(blogPost -> {
+                    Optional<Category> category = categoryRepository.findById(blogPostDetails.getCategoryId());
                     blogPost.setTitle(blogPostDetails.getTitle());
-                    blogPost.setContents(blogPostDetails.getContents());
+                    blogPost.setContents(blogPostDetails.getText());
                     blogPost.setTimestamp(blogPostDetails.getTimestamp());
-                    blogPost.setCategory(blogPostDetails.getCategory());
+                    blogPost.setCategory(category.get());
                     return blogPostRepository.save(blogPost);
                 });
     }

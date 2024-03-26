@@ -1,10 +1,10 @@
 package vaco.built.interview.service;
 
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import vaco.built.interview.model.BlogPost;
 import vaco.built.interview.model.Category;
@@ -18,8 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BlogPostServiceTest {
@@ -50,11 +49,13 @@ public class BlogPostServiceTest {
         postReq.setTitle("test title");
         postReq.setText("New Blog post");
 
-        BlogPost post = new BlogPost();
+
         Category category = new Category();
         category.setId(1L);
         category.setName("Test");
 
+        BlogPost post = new BlogPost();
+        post.setId(12L);
         post.setTitle("test title");
         post.setContents("New Blog post");
         post.setCategory(category);
@@ -62,9 +63,11 @@ public class BlogPostServiceTest {
 
         given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
 
+        when(blogPostRepository.save(Mockito.any(BlogPost.class))).thenReturn(post);
         BlogPost newPost = blogPostService.createPost(postReq);
 
         verify(blogPostRepository, times(1)).save(any(BlogPost.class));
 
+        assertEquals(newPost, post);
     }
 }
